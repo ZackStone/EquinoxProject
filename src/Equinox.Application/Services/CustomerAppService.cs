@@ -1,14 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using AutoMapper;
+﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Equinox.Application.EventSourcedNormalizers;
 using Equinox.Application.Interfaces;
 using Equinox.Application.ViewModels;
 using Equinox.Domain.Commands;
 using Equinox.Domain.Core.Bus;
-using Equinox.Domain.Interfaces;
+using Equinox.Domain.Interfaces.Buckets;
+using Equinox.Domain.Interfaces.Repositories;
 using Equinox.Infra.Data.Repository.EventSourcing;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Equinox.Application.Services
 {
@@ -16,28 +18,39 @@ namespace Equinox.Application.Services
     {
         private readonly IMapper _mapper;
         private readonly ICustomerRepository _customerRepository;
+        private readonly ICustomerBucket _customerBucket;
         private readonly IEventStoreRepository _eventStoreRepository;
         private readonly IMediatorHandler Bus;
 
         public CustomerAppService(IMapper mapper,
-                                  ICustomerRepository customerRepository,
-                                  IMediatorHandler bus,
-                                  IEventStoreRepository eventStoreRepository)
+            ICustomerRepository customerRepository,
+            ICustomerBucket customerBucket,
+            IMediatorHandler bus,
+            IEventStoreRepository eventStoreRepository)
         {
             _mapper = mapper;
             _customerRepository = customerRepository;
+            _customerBucket = customerBucket;
             Bus = bus;
             _eventStoreRepository = eventStoreRepository;
         }
 
         public IEnumerable<CustomerViewModel> GetAll()
         {
-            return _customerRepository.GetAll().ProjectTo<CustomerViewModel>(_mapper.ConfigurationProvider);
+            var customers = _customerBucket.GetAll().GetAwaiter().GetResult();
+            return customers
+                .ToEnumerable().AsQueryable()
+                .ProjectTo<CustomerViewModel>(_mapper.ConfigurationProvider);
+
+            //return _customerRepository.GetAll().ProjectTo<CustomerViewModel>(_mapper.ConfigurationProvider);
         }
 
         public CustomerViewModel GetById(Guid id)
         {
-            return _mapper.Map<CustomerViewModel>(_customerRepository.GetById(id));
+            var customer = _customerBucket.GetById(id.ToString()).GetAwaiter().GetResult();
+            return _mapper.Map<CustomerViewModel>(customer);
+
+            //return _mapper.Map<CustomerViewModel>(_customerRepository.GetById(id));
         }
 
         public void Register(CustomerViewModel customerViewModel)

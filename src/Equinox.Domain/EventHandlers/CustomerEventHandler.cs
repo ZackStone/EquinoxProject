@@ -1,7 +1,8 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Equinox.Domain.Events;
+﻿using Equinox.Domain.Events;
+using Equinox.Domain.Interfaces.Buckets;
 using MediatR;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Equinox.Domain.EventHandlers
 {
@@ -10,25 +11,26 @@ namespace Equinox.Domain.EventHandlers
         INotificationHandler<CustomerUpdatedEvent>,
         INotificationHandler<CustomerRemovedEvent>
     {
-        public Task Handle(CustomerUpdatedEvent message, CancellationToken cancellationToken)
-        {
-            // Send some notification e-mail
+        private readonly ICustomerBucket _customersBucket;
 
-            return Task.CompletedTask;
+        public CustomerEventHandler(ICustomerBucket customersBucket)
+        {
+            _customersBucket = customersBucket;
         }
 
-        public Task Handle(CustomerRegisteredEvent message, CancellationToken cancellationToken)
+        public async Task Handle(CustomerUpdatedEvent message, CancellationToken cancellationToken)
         {
-            // Send some greetings e-mail
-
-            return Task.CompletedTask;
+            await _customersBucket.DefaultCollection.UpsertAsync(message.Id.ToString(), message);
         }
 
-        public Task Handle(CustomerRemovedEvent message, CancellationToken cancellationToken)
+        public async Task Handle(CustomerRegisteredEvent message, CancellationToken cancellationToken)
         {
-            // Send some see you soon e-mail
+            await _customersBucket.DefaultCollection.InsertAsync(message.Id.ToString(), message);
+        }
 
-            return Task.CompletedTask;
+        public async Task Handle(CustomerRemovedEvent message, CancellationToken cancellationToken)
+        {
+            await _customersBucket.DefaultCollection.RemoveAsync(message.Id.ToString());
         }
     }
 }

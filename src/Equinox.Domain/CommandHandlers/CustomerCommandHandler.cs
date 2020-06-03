@@ -6,6 +6,7 @@ using Equinox.Domain.Core.Bus;
 using Equinox.Domain.Core.Notifications;
 using Equinox.Domain.Events;
 using Equinox.Domain.Interfaces;
+using Equinox.Domain.Interfaces.Repositories;
 using Equinox.Domain.Models;
 using MediatR;
 
@@ -19,10 +20,11 @@ namespace Equinox.Domain.CommandHandlers
         private readonly ICustomerRepository _customerRepository;
         private readonly IMediatorHandler Bus;
 
-        public CustomerCommandHandler(ICustomerRepository customerRepository, 
-                                      IUnitOfWork uow,
-                                      IMediatorHandler bus,
-                                      INotificationHandler<DomainNotification> notifications) :base(uow, bus, notifications)
+        public CustomerCommandHandler(
+            ICustomerRepository customerRepository,
+            IUnitOfWork uow,
+            IMediatorHandler bus,
+            INotificationHandler<DomainNotification> notifications) : base(uow, bus, notifications)
         {
             _customerRepository = customerRepository;
             Bus = bus;
@@ -43,7 +45,7 @@ namespace Equinox.Domain.CommandHandlers
                 Bus.RaiseEvent(new DomainNotification(message.MessageType, "The customer e-mail has already been taken."));
                 return Task.FromResult(false);
             }
-            
+
             _customerRepository.Add(customer);
 
             if (Commit())
@@ -69,7 +71,7 @@ namespace Equinox.Domain.CommandHandlers
             {
                 if (!existingCustomer.Equals(customer))
                 {
-                    Bus.RaiseEvent(new DomainNotification(message.MessageType,"The customer e-mail has already been taken."));
+                    Bus.RaiseEvent(new DomainNotification(message.MessageType, "The customer e-mail has already been taken."));
                     return Task.FromResult(false);
                 }
             }
