@@ -5,9 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Equinox.Infra.Data.Couchbase\Equinox.Infra.Data.Couchbase.csproj" />
     <ProjectReference Include="..\Equinox.Application\Equinox.Application.csproj" />
     <ProjectReference Include="..\Equinox.Domain\Equinox.Domain.csproj" />
+    <ProjectReference Include="..\Equinox.Infra.Data.Couchbase\Equinox.Infra.Data.Couchbase.csproj" />
     <ProjectReference Include="..\Equinox.Infra.Data\Equinox.Infra.Data.csproj" />
   </ItemGroup>
 
