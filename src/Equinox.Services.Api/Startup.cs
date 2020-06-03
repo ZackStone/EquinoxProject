@@ -34,17 +34,11 @@ namespace Equinox.Services.API
             // Setting DBContexts
             services.AddDatabaseSetup(Configuration);
 
-            // ASP.NET Identity Settings & JWT
-            services.AddIdentitySetup(Configuration);
-
             // WebAPI Config
             services.AddControllers();
 
             // AutoMapper Settings
             services.AddAutoMapperSetup();
-
-            // Authorization
-            services.AddAuthSetup(Configuration);
 
             // Swagger Config
             services.AddSwaggerSetup();

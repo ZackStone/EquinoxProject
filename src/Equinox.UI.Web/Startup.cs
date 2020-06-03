@@ -35,18 +35,12 @@ namespace Equinox.UI.Web
             // Setting DBContexts
             services.AddDatabaseSetup(Configuration);
 
-            // ASP.NET Identity Settings
-            services.AddIdentitySetup();
-
             // AutoMapper Settings
             services.AddAutoMapperSetup();
 
             // MVC Settings
             services.AddControllersWithViews();
             services.AddRazorPages();
-
-            // Authentication & Authorization
-            services.AddAuthSetup(Configuration);
 
             // Adding MediatR for Domain Events and Notifications
             services.AddMediatR(typeof(Startup));

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Equinox.Domain.Interfaces;
+using Equinox.Domain.Interfaces.Repositories;
 using Equinox.Infra.Data.Context;
 using Microsoft.EntityFrameworkCore;
 
